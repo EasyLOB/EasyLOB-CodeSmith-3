@@ -1,0 +1,173 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="C#" Src="..\CodeSmithHelper.cs" Inherits="XCodeSmith.CodeSmithHelper" Debug="False" Description="" %>
+
+<%@ Property Name="Application" Type="String" Category="Application" Description="Application" %>
+<%@ Property Name="Namespace" Type="String" Category="Application" Description="Namespace [using Application.*]" %>
+
+<%@ Property Name="Archetype" Type="XCodeSmith.Archetypes" Category="Context" Description="Controllers Archetype" %>
+<%@ Property Name="Culture" Type="XCodeSmith.Cultures" Category="Context" Description="Culture for Plural Rules" %>
+
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Database" Description="Table" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>        
+<%@ Import Namespace="System.Data" %>
+<%
+if (SourceTable.PrimaryKey == null) {
+    throw new ApplicationException("SourceTable does not contain a primary key.");
+}
+      
+string tableName = TableName(SourceTable.FullName);
+string className = ClassName(SourceTable.FullName, Culture);
+string objectName = ObjectName(SourceTable.FullName, Culture);
+
+string classNamePlural = Plural(className, Culture);
+string objectNamePlural = Plural(objectName, Culture);
+
+string pkParameters = ""; // int? parameter1, string parameter2, ...
+string pkParametersArray = ""; // parameter1, parameter2, ...
+string pkParametersUrl = ""; // {parameter1}/{parameter2}/ ...
+string pkParametersNotEqual = ""; // parameters1 != Class.Property1 || parameters2 != Class.Property2 || ...
+string pkPropertiesArray = ""; // new object[] { object.Class.Property1, object.Property2, ... };
+foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) {
+    pkParameters += (pkParameters == "" ? "" : ", ") + GetType(column.DataType, false) + " " + LocalName(column.Name);
+    pkParametersArray += (pkParametersArray == "" ? "" : ", ") + LocalName(column.Name);
+    pkParametersUrl += (pkParametersUrl == "" ? "" : "/") + "{" + LocalName(column.Name) + "}";
+    pkParametersNotEqual += (pkParametersNotEqual == "" ? "" : " || ") + LocalName(PropertyName(column.Name)) + " == null";
+    pkPropertiesArray += (pkPropertiesArray == "" ? "" : ", ") + objectName + "DTO." + PropertyName(column.Name);
+}
+%>
+using <%= Application %>;
+using <%= Application %>.Application;
+using <%= Application %>.Data;
+using EasyLOB;
+using EasyLOB.Library.AspNet;
+using EasyLOB.WebApi;
+using System;
+using System.Collections.Generic;
+using System.Web.Http;
+
+namespace <%= Namespace %>
+{
+    public class <%= className %>APIController : BaseApiControllerApplication<<%= className %>DTO, <%= className %>>
+    {
+        #region Methods
+
+        public <%= className %>APIController(I<%= Application %>GenericApplicationDTO<<%= className %>DTO, <%= className %>> application)
+        {
+            Application = application;
+        }
+
+        #endregion Methods
+
+        #region Methods CRUD
+
+        // DELETE: api/<%= objectName %>api/1
+        [Route("api/<%= objectName %>api/<%= pkParametersUrl %>")]
+        public IHttpActionResult Delete<%= className %>(<%= pkParameters %>)
+        {
+            ZOperationResult operationResult = new ZOperationResult();
+            
+            try
+            {
+                <%= className %>DTO <%= objectName %>DTO = Application.GetById(operationResult, new object[] { <%= pkParametersArray %> });    
+                if (<%= objectName %>DTO != null)
+                {
+                    if (Application.Delete(operationResult, <%= objectName %>DTO))
+                    {
+                        return Ok();
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                operationResult.ParseException(exception);
+            }
+
+            return new OperationResultActionResult(Request, operationResult);
+        }
+
+        // GET: api/<%= objectName %>api
+        public IHttpActionResult Get<%= classNamePlural %>(string where = null, string orderBy = null, int? skip = null, int? take = null)
+        {
+            ZOperationResult operationResult = new ZOperationResult();
+
+            try
+            {
+                return Ok<IEnumerable<<%= className %>DTO>>(Application.Search(operationResult,
+                    where, null, orderBy, skip, take ?? AppDefaults.SyncfusionRecordsBySearch));
+            }
+            catch (Exception exception)
+            {
+                operationResult.ParseException(exception);
+            }
+
+            return new OperationResultActionResult(Request, operationResult);
+        }
+
+        // GET: api/<%= objectName %>api/1
+        [Route("api/<%= objectName %>api/<%= pkParametersUrl %>")]
+        public IHttpActionResult Get<%= className %>(<%= pkParameters %>)
+        {
+            ZOperationResult operationResult = new ZOperationResult();
+
+            try
+            {
+                <%= className %>DTO <%= objectName %>DTO = Application.GetById(operationResult, new object[] { <%= pkParametersArray %> });   
+                if (<%= objectName %>DTO != null)
+                {
+                    return Ok(<%= objectName %>DTO);
+                }
+            }
+            catch (Exception exception)
+            {
+                operationResult.ParseException(exception);
+            }
+
+            return new OperationResultActionResult(Request, operationResult);
+        }
+
+        // POST: api/<%= objectName %>api
+        public IHttpActionResult Post<%= className %>(<%= className %>DTO <%= objectName %>DTO)
+        {
+            ZOperationResult operationResult = new ZOperationResult();
+
+            try
+            {
+                if (Application.Create(operationResult, <%= objectName %>DTO))
+                {
+                    return CreatedAtRoute("DefaultApi", new { <%= pkPropertiesArray %> }, <%= objectName %>DTO);
+                }
+            }
+            catch (Exception exception)
+            {
+                operationResult.ParseException(exception);
+            }
+
+            return new OperationResultActionResult(Request, operationResult);
+        }
+
+        // PUT: api/<%= objectName %>api/1
+        [Route("api/<%= objectName %>api/<%= pkParametersUrl %>")]
+        public IHttpActionResult Put<%= className %>(<%= pkParameters %>, <%= className %>DTO <%= objectName %>DTO)
+        {
+            ZOperationResult operationResult = new ZOperationResult();
+
+            try
+            {
+                if (Application.Create(operationResult, <%= objectName %>DTO))
+                {
+                    return Ok(<%= objectName %>DTO);
+                }
+            }
+            catch (Exception exception)
+            {
+                operationResult.ParseException(exception);
+            }
+
+            return new OperationResultActionResult(Request, operationResult);
+        }
+
+        #endregion Methods REST
+    }
+}

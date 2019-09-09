@@ -1,0 +1,116 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="Text" Src="" Inherits="" Debug="False" Description="" %>
+
+<%@ Property Name="SourceTables" Type="SchemaExplorer.TableSchemaCollection" Category="Database" Description="Tables" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<script runat="template">
+
+public string ColumnPK(ColumnSchema column)
+{
+    if (column.IsPrimaryKeyMember)
+	    return "PK";
+    else
+        return "--";
+}
+
+public string ColumnFK(ColumnSchema column)
+{
+    if (column.IsForeignKeyMember)
+	    return "FK";
+    else
+        return "--";
+}
+
+public string ColumnNULL(ColumnSchema column)
+{
+    if (column.AllowDBNull)
+	    return "NULL";
+    else
+        return "----";
+}
+
+public string FKTableName(TableSchema table, ColumnSchema column)
+{
+    string fkTableName = "";
+    
+    foreach (TableKeySchema tableX in table.ForeignKeys)
+    {
+        foreach (ColumnSchema columnX in tableX.ForeignKeyMemberColumns)
+        {
+            if (columnX.Name == column.Name)
+            {
+                fkTableName = tableX.PrimaryKeyTable.Name.Replace("dbo", "").Replace(".","");
+                break;
+            }
+        }
+    }
+    
+    return fkTableName;
+}
+
+public string GetDbType(DbType dbType)
+{
+    switch (dbType)
+    {
+        case DbType.AnsiString: return "String";
+        case DbType.AnsiStringFixedLength: return "String";
+        case DbType.Binary: return "Binary";
+        case DbType.Boolean: return "Boolean";
+        case DbType.Byte: return "Byte";
+        //case DbType.Currency: return "Currency";
+        case DbType.Currency: return "Decimal";
+        case DbType.Date: return "DateTime";
+        case DbType.DateTime: return "DateTime";
+        //case DbType.DateTime2: return ""; // 2.6
+        //case DbType.DateTimeOffset: return ""; // 2.6
+        case DbType.Decimal: return "Decimal";
+        case DbType.Double: return "Double";
+        case DbType.Guid: return "Guid";
+        case DbType.Int16: return "Int16";
+        case DbType.Int32: return "Int32";
+        case DbType.Int64: return "Int64";
+        //case DbType.Object: return "Object";
+        case DbType.Object: return "Binary";
+        //case DbType.SByte: return "SByte"; // siegmar
+        case DbType.SByte: return "Byte";
+        case DbType.Single: return "Single";
+        case DbType.String: return "String";
+        case DbType.StringFixedLength: return "String";
+        case DbType.Time: return "Time";
+        //case DbType.UInt16: return "UInt16"; // siegmar
+        case DbType.UInt16: return "Int16";
+        //case DbType.UInt32: return "UInt32"; // siegmar
+        case DbType.UInt32: return "Int32";
+        //case DbType.UInt64: return "UInt64"; // siegmar
+        case DbType.UInt64: return "Int64";
+        case DbType.VarNumeric: return "VarNumeric";
+        //case DbType.Xml: return "Xml";
+        //case DbType.Xml: return "String"; // 2.6
+        //default: return "_" + column.NativeType + "_";
+        default: return "String";
+    }
+}
+
+</script>
+<%  foreach (TableSchema table in SourceTables) {
+        //if (table.HasPrimaryKey) { // 2.6
+        if (table.PrimaryKey.MemberColumns.Count > 0) { %>
+
+<%= table.Name %>
+<%          if (table.PrimaryKeys.Count > 0) { %>
+  Collections (PK)
+<%              foreach (TableKeySchema primaryKey in table.PrimaryKeys) { %>
+    <%= primaryKey.ForeignKeyTable.Name %>
+<%              }
+            } %>
+<%          if (table.ForeignKeys.Count > 0) { %>
+  Associations (FK)
+<%              foreach (TableKeySchema fkTable in table.ForeignKeys) { %>
+    <%= fkTable.PrimaryKeyTable.Name.Replace("dbo", "").Replace(".","") %>
+<%              }
+            } %>            
+<%      }
+    } %>

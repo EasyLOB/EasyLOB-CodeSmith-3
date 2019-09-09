@@ -1,0 +1,43 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="C#" Src="..\CodeSmithHelper.cs" Inherits="XCodeSmith.CodeSmithHelper" Debug="False" Description="" %>
+
+<%@ Property Name="Application" Type="String" Category="Application" Description="Application" %>
+
+<%@ Property Name="Culture" Type="XCodeSmith.Cultures" Category="Context" Description="Culture for Plural Rules" %>
+
+<%@ Property Name="SourceTables" Type="SchemaExplorer.TableSchemaCollection" Category="Database" Description="Tables" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+@model TaskModel
+
+@{
+    string CSHTML = "API.cshtml";
+    string pageTitle = Model.Task;
+    string documentTitle = AppHelper.DocumentTitle(pageTitle);
+}
+
+<h4>@pageTitle</h4>
+<%  foreach (TableSchema table in SourceTables) {
+        string className = ClassName(table.Name, Culture);
+        string objectName = ObjectName(table.Name, Culture).ToLower(); %>
+
+<br />
+@<%= className %>Resources.EntityPlural<br />
+<a href="@Url.Content("/api/<%= objectName %>api")">api/<%= objectName %>api</a><br />
+<a href="@Url.Content("/api/<%= objectName %>api/1")">api/<%= objectName %>api/1</a><br />
+<%  } %>
+
+<script>
+    $(function () {
+        try {
+            var model = @Html.Raw(JsonConvert.SerializeObject(Model));
+
+            $(document).prop("title", "@Html.Raw(documentTitle)");
+            zShowOperationResult(model.OperationResult);
+        } catch (exception) {
+            zAlert(zExceptionMessage("@CSHTML", "function", exception));
+        }
+    });
+</script>

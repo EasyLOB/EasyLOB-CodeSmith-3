@@ -1,0 +1,90 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="C#" Src="..\CodeSmithHelper.cs" Inherits="XCodeSmith.CodeSmithHelper" Debug="False" Description="" %>
+
+<%@ Property Name="Application" Type="String" Category="Application" Description="Application" %>
+
+<%@ Property Name="Culture" Type="XCodeSmith.Cultures" Category="Context" Description="Culture for Plural Rules" %>
+
+<%@ Property Name="SourceTables" Type="SchemaExplorer.TableSchemaCollection" Category="Database" Description="Tables" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using <%= Application %>.Data;
+using EasyLOB;
+using EasyLOB.Data;
+
+namespace <%= Application %>.Shell
+{
+    partial class Program
+    {
+        private static void Application<%= Application %>Demo()
+        {
+            Console.WriteLine("\nApplication <%= Application %> Demo\n");
+<%  foreach (TableSchema SourceTable in SourceTables) {
+        string tableName = TableName(SourceTable.FullName);
+        string className = ClassName(SourceTable.FullName, Culture);
+        string objectName = ObjectName(SourceTable.FullName, Culture);
+        
+        string defaultProperty = "";
+        if (SourceTable.NonPrimaryKeyColumns.Count > 0) {
+            defaultProperty = PropertyName(SourceTable.NonPrimaryKeyColumns[0].Name);
+        } else {
+            defaultProperty = PropertyName(SourceTable.PrimaryKey.MemberColumns[0].Name);
+        }
+        
+        ColumnSchema column = SourceTable.PrimaryKey.MemberColumns[0];
+        string keyColumn = ColumnName(column.Name);
+        string keyProperty = PropertyName(column.Name);
+        //string keyPropertyType = GetType(column.DataType);
+        string keyPropertyType = GetTypeNullable(column.DataType);
+        string keyPropertyDbType = GetDbType(column.DataType); %>
+
+            Application<%= Application %>Data<<%= className %>>();
+            Application<%= Application %>DTO<<%= className %>DTO, <%= className %>>();
+<%  } %>
+        }
+
+        private static void ApplicationEasyDGData<TEntity>()
+            where TEntity : ZDataBase
+        {
+            ZOperationResult operationResult = new ZOperationResult();
+
+            IEasyDGGenericApplication<TEntity> application =
+                DIHelper.GetService<IEasyDGGenericApplication<TEntity>>();
+            IEnumerable<TEntity> enumerable = application.Search(operationResult, null, null, null, 100, null);
+            //IEnumerable<TEntity> enumerable = application.SearchAll(operationResult);
+            if (operationResult.Ok)
+            {
+                Console.WriteLine(typeof(TEntity).Name + ": {0}", enumerable.Count());
+            }
+            else
+            {
+                Console.WriteLine(operationResult.Text);
+            }
+        }
+
+        private static void ApplicationEasyDGDTO<TEntityDTO, TEntity>()
+            where TEntityDTO : ZDTOBase<TEntityDTO, TEntity>
+            where TEntity : ZDataBase
+        {
+            ZOperationResult operationResult = new ZOperationResult();
+
+            IEasyDGGenericApplicationDTO<TEntityDTO, TEntity> application =
+                DIHelper.GetService<IEasyDGGenericApplicationDTO<TEntityDTO, TEntity>>();
+            IEnumerable<TEntityDTO> enumerable = application.Search(operationResult, null, null, null, 100, null);
+            //IEnumerable<TEntityDTO> enumerable = application.SearchAll(operationResult);
+            if (operationResult.Ok)
+            {
+                Console.WriteLine(typeof(TEntity).Name + ": {0}", enumerable.Count());
+            }
+            else
+            {
+                Console.WriteLine(operationResult.Text);
+            }
+        }               
+    }
+}
