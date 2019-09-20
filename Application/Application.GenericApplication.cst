@@ -23,9 +23,8 @@ namespace <%= Namespace %>
     {
         #region Methods
 
-        public <%= Application %>GenericApplication(I<%= Application %>UnitOfWork unitOfWork, IDIManager diManager)
-            : base(unitOfWork, diManager)
-            
+        public <%= Application %>GenericApplication(I<%= Application %>UnitOfWork unitOfWork)
+            : base(unitOfWork)            
         {
         }
 

@@ -24,8 +24,8 @@ namespace <%= Namespace %>
     {
         #region Methods
 
-        public <%= Application %>GenericApplicationDTO(I<%= Application %>UnitOfWork unitOfWork, IDIManager diManager)
-            : base(unitOfWork, diManager)
+        public <%= Application %>GenericApplicationDTO(I<%= Application %>UnitOfWork unitOfWork)
+            : base(unitOfWork)
         {
         }
 
