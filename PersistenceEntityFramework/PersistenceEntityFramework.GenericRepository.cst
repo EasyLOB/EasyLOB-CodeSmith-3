@@ -22,7 +22,7 @@ namespace <%= Namespace %>
     {
         #region Methods
 
-        public <%= Application %>GenericRepositoryEF(IUnitOfWork unitOfWork)
+        public <%= Application %>GenericRepositoryEF(I<%= Application %>UnitOfWork unitOfWork)
             : base(unitOfWork)
         {
             Context = (unitOfWork as <%= Application %>UnitOfWorkEF).Context;

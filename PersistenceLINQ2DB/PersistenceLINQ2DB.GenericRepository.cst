@@ -21,7 +21,7 @@ namespace <%= Namespace %>
     {
         #region Methods
 
-        public <%= Application %>GenericRepositoryLINQ2DB(IUnitOfWork unitOfWork)
+        public <%= Application %>GenericRepositoryLINQ2DB(I<%= Application %>UnitOfWork unitOfWork)
             : base(unitOfWork)
         {
             Connection = (unitOfWork as <%= Application %>UnitOfWorkLINQ2DB).Connection;

@@ -22,7 +22,7 @@ namespace <%= Namespace %>
     {
         #region Methods
 
-        public <%= Application %>GenericRepositoryNH(IUnitOfWork unitOfWork)
+        public <%= Application %>GenericRepositoryNH(I<%= Application %>UnitOfWork unitOfWork)
             : base(unitOfWork)
         {
             Session = (unitOfWork as <%= Application %>UnitOfWorkNH).Session;

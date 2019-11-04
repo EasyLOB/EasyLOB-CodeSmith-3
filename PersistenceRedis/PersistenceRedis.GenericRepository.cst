@@ -21,7 +21,7 @@ namespace <%= Namespace %>
     {
         #region Methods
 
-        public <%= Application %>GenericRepositoryRedis(IUnitOfWork unitOfWork)
+        public <%= Application %>GenericRepositoryRedis(I<%= Application %>UnitOfWork unitOfWork)
             : base(unitOfWork)
         {
             Client = (unitOfWork as <%= Application %>UnitOfWorkRedis).Client;
