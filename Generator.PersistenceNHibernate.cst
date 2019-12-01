@@ -10,9 +10,10 @@
 
 <%@ Property Name="DoPersistenceNHibernateMap" Type="Boolean" Default="False" Category="To-Do" Description="Generate Persistence :: NHibernate Configurations ?" %>
 <%@ Property Name="DoPersistenceNHibernateFactory" Type="Boolean" Default="False" Category="To-Do" Description="Generate Persistence :: NH Factory ?" %>
+<%--
 <%@ Property Name="DoPersistenceNHibernateGenericRepository" Type="Boolean" Default="False" Category="To-Do" Description="Generate Persistence :: NH Generic Repository ?" %>
 <%@ Property Name="DoPersistenceNHibernateUnitOfWork" Type="Boolean" Default="False" Category="To-Do" Description="Generate Persistence :: NH Unit of Work ?" %>
-
+--%>
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Assembly Name="System.Data" %>
 <%@ Import Namespace="SchemaExplorer" %>
@@ -27,7 +28,7 @@ if (DoPersistenceNHibernateFactory)
 {
     GeneratePersistenceNHibernateFactory(SourceTables, Application, Namespace, Output, Culture);   
 }
-
+/*
 if (DoPersistenceNHibernateGenericRepository)
 {
     GeneratePersistenceNHibernateGenericRepository(SourceTables, Application, Namespace, Output, Culture);    
@@ -37,4 +38,5 @@ if (DoPersistenceNHibernateUnitOfWork)
 {
     GeneratePersistenceNHibernateUnitOfWork(SourceTables, Application, Namespace, Output, Culture);
 }
+*/
 %>

@@ -10,9 +10,10 @@
 
 <%@ Property Name="DoPersistenceEntityFrameworkConfiguration" Type="Boolean" Default="False" Category="To-Do" Description="Generate Persistence :: EF Configurations ?" %>
 <%@ Property Name="DoPersistenceEntityFrameworkDbContext" Type="Boolean" Default="False" Category="To-Do" Description="Generate Persistence :: EF DbContext ?" %>
+<%--
 <%@ Property Name="DoPersistenceEntityFrameworkGenericRepository" Type="Boolean" Default="False" Category="To-Do" Description="Generate Persistence :: EF Generic Repository ?" %>
 <%@ Property Name="DoPersistenceEntityFrameworkUnitOfWork" Type="Boolean" Default="False" Category="To-Do" Description="Generate Persistence :: EF Unit of Work ?" %>
-
+--%>
 <%@ Assembly Name="SchemaExplorer" %>
 <%@ Assembly Name="System.Data" %>
 <%@ Import Namespace="SchemaExplorer" %>
@@ -27,7 +28,7 @@ if (DoPersistenceEntityFrameworkDbContext)
 {
     GeneratePersistenceEntityFrameworkDbContext(SourceTables, Application, Namespace, Output, Culture);   
 }
-
+/*
 if (DoPersistenceEntityFrameworkGenericRepository)
 {
     GeneratePersistenceEntityFrameworkGenericRepository(SourceTables, Application, Namespace, Output, Culture);    
@@ -37,4 +38,5 @@ if (DoPersistenceEntityFrameworkUnitOfWork)
 {
     GeneratePersistenceEntityFrameworkUnitOfWork(SourceTables, Application, Namespace, Output, Culture);
 }
+*/
 %>
