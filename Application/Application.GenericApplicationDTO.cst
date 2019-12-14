@@ -11,7 +11,6 @@
 <%@ Assembly Name="System.Data" %>
 <%@ Import Namespace="SchemaExplorer" %>
 <%@ Import Namespace="System.Data" %>
-using <%= Namespace.Replace(".Application", ".Persistence") %>;
 using EasyLOB;
 using EasyLOB.Application;
 
@@ -24,8 +23,10 @@ namespace <%= Namespace %>
     {
         #region Methods
 
-        public <%= Application %>GenericApplicationDTO(I<%= Application %>UnitOfWork unitOfWork)
-            : base(unitOfWork)
+        public <%= Application %>GenericApplicationDTO(I<%= Application %>UnitOfWork unitOfWork,
+            IAuditTrailManager auditTrailManager,
+            IAuthorizationManager authorizationManager)
+            : base(unitOfWork, auditTrailManager, authorizationManager)
         {
         }
 
